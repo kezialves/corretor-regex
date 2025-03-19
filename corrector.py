@@ -25,8 +25,20 @@ def count_structures(code):
             indentation_level = len(line) - len(line.lstrip())
             # Extrai a palavra reservada
             reserved_word = line.lstrip().split()[0]
+
+            # Agrupa 'if', 'elif' e 'else' como "Condição"
+            if reserved_word in ['if', 'elif', 'else:']:
+                structure_type = "Condição"
+            
+            # Agrupa 'for' e 'while' como "Laço"
+            elif reserved_word in ['for', 'while']:
+                structure_type = "Laço"
+            
+            else:
+                structure_type = reserved_word
+
             # Incrementa a contagem da estrutura de controle correspondente
-            count[indentation_level][reserved_word] += 1
+            count[indentation_level][structure_type] += 1
 
     # Retorna o dicionário ordenado pelo nível de indentação
     return {k: count[k] for k in sorted(count.keys())}
@@ -59,22 +71,22 @@ def dict_similarity(dict1, dict2):
         if key in dict2:
             all_structures.update(dict2[key].keys())
 
-    normalized_dict1 = {}
-    normalized_dict2 = {}
-
     # ---------- código para print ----------
-    for key in all_keys:
-        normalized_dict1[key] = {}
-        normalized_dict2[key] = {}
+    # normalized_dict1 = {}
+    # normalized_dict2 = {}
 
-        for structure in all_structures:
-            normalized_dict1[key][structure] = dict1.get(key, {}).get(structure, 0)
-            normalized_dict2[key][structure] = dict2.get(key, {}).get(structure, 0)
+    # for key in all_keys:
+    #     normalized_dict1[key] = {}
+    #     normalized_dict2[key] = {}
 
-    print("----- Dicionário normalizado da solução:")
-    dict_print(normalized_dict1)
-    print("\n----- Dicionário normalizado do gabarito:")
-    dict_print(normalized_dict2)
+    #     for structure in all_structures:
+    #         normalized_dict1[key][structure] = dict1.get(key, {}).get(structure, 0)
+    #         normalized_dict2[key][structure] = dict2.get(key, {}).get(structure, 0)
+
+    # print("----- Dicionário normalizado da solução:")
+    # dict_print(normalized_dict1)
+    # print("\n----- Dicionário normalizado do gabarito:")
+    # dict_print(normalized_dict2)
     # ----------------------------------------
 
     # ---------- Calcula a similaridade ----------
@@ -82,24 +94,24 @@ def dict_similarity(dict1, dict2):
     total_difference = 0
     total_count = 0
 
-    # for key in all_keys:
-    #     for structure in all_structures:
-    #         # Conta as estruturas de cada dicionário
-    #         count1 = dict1.get(key, {}).get(structure, 0)
-    #         count2 = dict2.get(key, {}).get(structure, 0)
-
-    #         total_difference += abs(count1 - count2)
-    #         total_count += max(count1, count2)
-
-    # ---------- código para print ----------
     for key in all_keys:
         for structure in all_structures:
             # Conta as estruturas de cada dicionário
-            count1 = normalized_dict1[key][structure]
-            count2 = normalized_dict2[key][structure]
+            count1 = dict1.get(key, {}).get(structure, 0)
+            count2 = dict2.get(key, {}).get(structure, 0)
 
             total_difference += abs(count1 - count2)
             total_count += max(count1, count2)
+
+    # ---------- código para print ----------
+    # for key in all_keys:
+    #     for structure in all_structures:
+    #         # Conta as estruturas de cada dicionário
+    #         count1 = normalized_dict1[key][structure]
+    #         count2 = normalized_dict2[key][structure]
+
+    #         total_difference += abs(count1 - count2)
+    #         total_count += max(count1, count2)
     # ----------------------------------------
 
     # Se ambos os dicionários forem vazios, a similaridade é de 100%
